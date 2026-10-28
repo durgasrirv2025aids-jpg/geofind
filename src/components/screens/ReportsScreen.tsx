@@ -31,30 +31,13 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
     resetScrollToTop();
   }, [activeSector.id]);
 
-  // Robust, unblockable file download trigger
-  const triggerDownload = () => {
+  // Clean, native browser download trigger
+  const triggerDownload = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     const downloadUrl = `/api/download-report?id=${activeSector.id}`;
-    
-    // 1. Direct anchor download click
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = `GeoFind_Report_${activeSector.district}_${activeSector.category}.pdf`;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-
-    // 2. Hidden background iframe fallback to ensure download starts in all browsers
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = downloadUrl;
-    document.body.appendChild(iframe);
-
-    setTimeout(() => {
-      try {
-        document.body.removeChild(a);
-        document.body.removeChild(iframe);
-      } catch {}
-    }, 4000);
+    window.location.href = downloadUrl;
   };
 
   const handlePrint = () => {

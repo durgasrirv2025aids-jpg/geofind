@@ -5,6 +5,12 @@ import { jsPDF } from 'jspdf';
 import { ALL_SECTORS } from '@/data/detections';
 import { TOPICS } from '@/data/topics';
 
+export const config = {
+  api: {
+    responseLimit: false,
+  },
+};
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const sectorId = (req.query.id as string) || ALL_SECTORS[0].id;
@@ -17,6 +23,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
+      compress: true,
     });
 
     // 1. Header Banner
