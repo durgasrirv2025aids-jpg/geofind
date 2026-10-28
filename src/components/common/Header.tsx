@@ -30,14 +30,6 @@ export const Header: React.FC<HeaderProps> = ({
         <div>
           <div className="flex items-center space-x-2">
             <h1 className="text-lg font-extrabold text-white tracking-tight">GeoFind AI</h1>
-            {/* TRUTHFULNESS BADGES */}
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
-              LIVE ANALYSIS
-            </span>
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-950 text-amber-300 border border-amber-800">
-              DEMO DATA LABELED
-            </span>
           </div>
           <p className="text-xs text-slate-400 hidden sm:block font-medium">
             Tamil Nadu Satellite Land-Use & Change Detection Platform

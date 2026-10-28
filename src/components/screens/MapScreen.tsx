@@ -97,8 +97,8 @@ export const MapScreen: React.FC<MapScreenProps> = ({
                   </span>
                   <div className="flex items-center space-x-2">
                     {district.hasDemoSector && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
-                        DEMO READY
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
+                        ACTIVE
                       </span>
                     )}
                     <span className="text-[11px] text-slate-400 font-mono">

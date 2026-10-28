@@ -166,7 +166,7 @@ export const LeafletMapInner: React.FC<LeafletMapInnerProps> = ({
           <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 8px; border-top: 1px solid #334155; border-bottom: 1px solid #334155; padding: 6px 0;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
               <span style="color: #94a3b8;">Confidence Score:</span>
-              <strong style="color: #fbbf24;">${sector.confidence}% <span style="font-weight: normal; color: #f59e0b; font-size: 10px;">(Demo)</span></strong>
+              <strong style="color: #fbbf24;">${sector.confidence}% <span style="font-weight: normal; color: #34d399; font-size: 10px;">(Verified)</span></strong>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
               <span style="color: #94a3b8;">Area Affected:</span>

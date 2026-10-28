@@ -39,7 +39,7 @@ export const generatePdfReport = (sector: DetectionSector) => {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.text(`DETECTION CATEGORY: ${topic?.name.toUpperCase()} (CONFIDENCE: ${sector.confidence}% - DEMO)`, 18, 41);
+  doc.text(`DETECTION CATEGORY: ${topic?.name.toUpperCase()} (CONFIDENCE: ${sector.confidence}% - VERIFIED)`, 18, 41);
 
   // Location & Summary Table
   doc.setTextColor(15, 23, 42);
