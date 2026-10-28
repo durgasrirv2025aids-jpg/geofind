@@ -102,20 +102,17 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </button>
 
-        {/* Officer Profile Badge / Login Switch */}
+        {/* User Login / Profile */}
         {currentUser ? (
           <button
             onClick={onNavigateToLogin}
-            title={`${currentUser.name} (${currentUser.role}) — Click to switch officer profile or re-authenticate`}
-            className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs border border-white/[0.08] hover:border-emerald-500/40 transition"
+            title={`${currentUser.name} — Click to switch user`}
+            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs border border-white/[0.08] transition"
           >
             <div className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center">
               {currentUser.avatarInitials}
             </div>
-            <div className="text-left leading-none hidden xl:block">
-              <div className="font-bold text-[11px] text-white truncate max-w-[130px]">{currentUser.name}</div>
-              <div className="text-[9px] text-emerald-400 font-mono">{currentUser.badge}</div>
-            </div>
+            <span className="font-bold text-[11px] text-white hidden sm:inline">{currentUser.name}</span>
           </button>
         ) : (
           <button
@@ -123,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs"
           >
             <Lock className="w-3.5 h-3.5" />
-            <span>Sign In</span>
+            <span>Login</span>
           </button>
         )}
 
