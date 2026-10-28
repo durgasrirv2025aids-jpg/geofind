@@ -213,3 +213,39 @@ body {
     opacity: 0;
   }
 }
+
+/* ==========================================================================
+   PRINT MEDIA STYLES
+   Hides all UI chrome (header, sidebar, action buttons, toasts) so ONLY the
+   official paper report is printed or saved to PDF.
+   ========================================================================== */
+@media print {
+  header,
+  aside,
+  nav,
+  .no-print,
+  [data-no-print="true"] {
+    display: none !important;
+  }
+
+  body, html {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  main {
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .print-document-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}

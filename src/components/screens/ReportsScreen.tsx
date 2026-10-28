@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { DetectionSector } from '@/types';
 import { TOPICS } from '@/data/topics';
 import { ALL_SECTORS } from '@/data/detections';
-import { generatePdfReport } from '@/services/pdf';
-import { Download, FileText, CheckCircle2, ShieldCheck, MapPin, Calendar, Printer, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Download, Printer, ShieldCheck } from 'lucide-react';
 
 interface ReportsScreenProps {
   sector: DetectionSector | null;
@@ -16,12 +15,6 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
 }) => {
   const activeSector = sector || ALL_SECTORS[0];
   const topic = TOPICS[activeSector.category];
-
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [downloadStatus, setDownloadStatus] = useState<{
-    type: 'success' | 'error' | null;
-    message: string;
-  }>({ type: null, message: '' });
 
   const resetScrollToTop = () => {
     if (typeof window !== 'undefined') {
@@ -36,36 +29,32 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
 
   React.useEffect(() => {
     resetScrollToTop();
-    setDownloadStatus({ type: null, message: '' });
   }, [activeSector.id]);
 
-  const handleDownload = async () => {
-    if (isGenerating) return;
-    setIsGenerating(true);
-    setDownloadStatus({ type: null, message: '' });
+  // Robust, unblockable file download trigger
+  const triggerDownload = () => {
+    const downloadUrl = `/api/download-report?id=${activeSector.id}`;
+    
+    // 1. Direct anchor download click
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = `GeoFind_Report_${activeSector.district}_${activeSector.category}.pdf`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
 
-    try {
-      const result = await generatePdfReport(activeSector);
-      if (result.success) {
-        setDownloadStatus({
-          type: 'success',
-          message: `PDF generated and downloaded: ${result.filename}`,
-        });
-      } else {
-        setDownloadStatus({
-          type: 'success',
-          message: `Document compiled: ${result.filename} (Check your downloads folder or click Print)`,
-        });
-      }
-    } catch (err: any) {
-      console.error('PDF Generation failed:', err);
-      setDownloadStatus({
-        type: 'error',
-        message: 'Could not trigger automatic file download. Please use the "Print / Save PDF" button.',
-      });
-    } finally {
-      setIsGenerating(false);
-    }
+    // 2. Hidden background iframe fallback to ensure download starts in all browsers
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = downloadUrl;
+    document.body.appendChild(iframe);
+
+    setTimeout(() => {
+      try {
+        document.body.removeChild(a);
+        document.body.removeChild(iframe);
+      } catch {}
+    }, 4000);
   };
 
   const handlePrint = () => {
@@ -76,8 +65,8 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
 
   return (
     <div className="p-4 sm:p-6 md:p-8 space-y-6 max-w-5xl mx-auto text-slate-900 dark:text-white">
-      {/* Title & Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+      {/* Title & Action Bar (Hidden during Print) */}
+      <div className="no-print flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
         <div>
           <div className="flex items-center space-x-2.5">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -92,7 +81,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
           </p>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Controls */}
         <div className="flex flex-wrap items-center gap-2.5">
           <select
             value={activeSector.id}
@@ -109,62 +98,29 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
             ))}
           </select>
 
-          {/* Direct Print / Save as PDF Fallback Button */}
+          {/* Print / Save to PDF */}
           <button
             onClick={handlePrint}
-            title="Open browser print dialog to save as PDF or print"
+            title="Print or Save as PDF"
             className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition border border-slate-200 dark:border-slate-700 shadow-xs"
           >
             <Printer className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-            <span>Print</span>
+            <span>Print Report</span>
           </button>
 
-          {/* Primary Instant Native Download PDF Link */}
-          <a
-            href={`/api/download-report?id=${activeSector.id}`}
-            download={`GeoFind_Report_${activeSector.district}_${activeSector.category}.pdf`}
-            onClick={() => {
-              setDownloadStatus({
-                type: 'success',
-                message: `Downloading official PDF report for ${activeSector.district}... Check your downloads.`,
-              });
-            }}
+          {/* Primary Instant Download PDF Button */}
+          <button
+            onClick={triggerDownload}
             className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white flex items-center space-x-2 transition shadow-md active:scale-95 cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Download Report (PDF)</span>
-          </a>
+          </button>
         </div>
       </div>
 
-      {/* Download Status Toast / Alert Banner */}
-      {downloadStatus.message && (
-        <div
-          className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-bold transition-all shadow-md ${
-            downloadStatus.type === 'success'
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
-              : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800'
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            {downloadStatus.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
-            )}
-            <span>{downloadStatus.message}</span>
-          </div>
-          <button
-            onClick={() => setDownloadStatus({ type: null, message: '' })}
-            className="text-xs opacity-60 hover:opacity-100 ml-4 underline"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
       {/* Official Formatted Paper Report Layout */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl overflow-hidden print:border-none print:shadow-none">
+      <div className="print-document-container bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl overflow-hidden print:border-none print:shadow-none print:rounded-none">
         {/* Document Header Bar */}
         <div className="bg-slate-950 text-white p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800">
           <div>
@@ -290,7 +246,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
               <span>Certified by GeoFind AI Autonomous Satellite Engine (Copernicus Sentinel-2 10m L2A)</span>
             </div>
 
-            <div className="flex items-center space-x-3">
+            <div className="no-print flex items-center space-x-3">
               <button
                 onClick={handlePrint}
                 className="text-slate-600 dark:text-slate-400 font-bold hover:underline flex items-center space-x-1"
@@ -298,14 +254,13 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
                 <Printer className="w-3.5 h-3.5" />
                 <span>Print Document</span>
               </button>
-              <a
-                href={`/api/download-report?id=${activeSector.id}`}
-                download={`GeoFind_Report_${activeSector.district}_${activeSector.category}.pdf`}
-                className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center space-x-1 cursor-pointer"
+              <button
+                onClick={triggerDownload}
+                className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center space-x-1"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download PDF Copy</span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
