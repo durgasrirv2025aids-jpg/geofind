@@ -12,7 +12,7 @@ import {
   Satellite,
   Compass,
   Layers,
-  Lock
+  Lock as LockIcon
 } from 'lucide-react';
 import { SatelliteSensorType } from '@/types';
 
@@ -37,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'change-analysis', label: 'Change Analysis', icon: SlidersHorizontal, badge: 'S2' },
     { id: 'evidence', label: 'Evidence Dossier', icon: FileSearch, badge: 'AUDIT' },
     { id: 'reports', label: 'Reports', icon: FileText, badge: 'PDF' },
-    { id: 'login', label: 'Login', icon: Lock, badge: 'AUTH' },
+    { id: 'login', label: 'Login', icon: LockIcon, badge: 'AUTH' },
   ];
 
   return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Satellite, Sun, Moon, Zap, Lock, UserCheck } from 'lucide-react';
+import { Satellite, Sun, Moon, Zap, Lock as LockIcon, UserCheck } from 'lucide-react';
 import { SatelliteSensorType } from '@/types';
 import { UserProfile } from '@/components/screens/LoginScreen';
 
@@ -119,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onNavigateToLogin}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs"
           >
-            <Lock className="w-3.5 h-3.5" />
+            <LockIcon className="w-3.5 h-3.5" />
             <span>Login</span>
           </button>
         )}

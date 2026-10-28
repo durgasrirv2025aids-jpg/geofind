@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Lock as LockIcon, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 export interface UserProfile {
   name: string;
@@ -116,7 +116,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
               Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+              <LockIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}

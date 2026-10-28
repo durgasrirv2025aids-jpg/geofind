@@ -62,16 +62,29 @@ export const MapScreen: React.FC<MapScreenProps> = ({
     (s) => filterCategory === 'all' || s.category === filterCategory
   );
 
+  const searchRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div className="flex flex-col h-[calc(100vh-4.25rem)] p-3 sm:p-4 md:p-6 space-y-3 max-w-[1920px] mx-auto text-slate-900 dark:text-white">
       {/* Top Glass Command Dock */}
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-md shrink-0 z-20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-md shrink-0 z-[1500] relative">
         
         {/* Search District Auto-suggest */}
-        <div className="relative flex-1 max-w-md">
+        <div ref={searchRef} className="relative w-full lg:w-96 min-w-[280px] sm:min-w-[340px] lg:min-w-[380px] shrink-0">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
+              id="map-district-search-input"
               type="text"
               value={searchQuery}
               onChange={(e) => {
@@ -79,43 +92,46 @@ export const MapScreen: React.FC<MapScreenProps> = ({
                 setIsDropdownOpen(true);
               }}
               onFocus={() => setIsDropdownOpen(true)}
+              onClick={() => setIsDropdownOpen(true)}
               placeholder="Search Tamil Nadu district or quarry zone..."
-              className="w-full pl-10 pr-9 py-2 text-xs md:text-sm bg-slate-100/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-900 dark:text-white transition placeholder:text-slate-400"
+              className="w-full pl-10 pr-9 py-2.5 text-xs md:text-sm bg-slate-100/90 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-900 dark:text-white transition placeholder:text-slate-400 shadow-inner"
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-0.5 rounded-md transition"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          {/* Auto-suggest dropdown */}
+          {/* Auto-suggest dropdown - Fixed spacious width with no squishing, high z-index above Leaflet */}
           {isDropdownOpen && filteredDistricts.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 max-h-64 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-50 divide-y divide-slate-100 dark:divide-slate-800/60">
-              <div className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 dark:bg-slate-950 flex items-center justify-between">
-                <span>Tamil Nadu Districts ({filteredDistricts.length})</span>
-                <span className="text-emerald-500 font-mono">Select to Scan</span>
+            <div className="absolute top-full left-0 mt-2 w-full sm:w-[420px] min-w-[320px] max-w-[95vw] max-h-80 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-2xl z-[1600] divide-y divide-slate-100 dark:divide-slate-800/80">
+              <div className="px-4 py-2.5 text-[11px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 dark:bg-slate-950/95 flex items-center justify-between sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800">
+                <span className="font-bold text-slate-700 dark:text-slate-300">Tamil Nadu Districts ({filteredDistricts.length})</span>
+                <span className="text-emerald-500 font-mono text-[10px]">Click to Scan</span>
               </div>
               {filteredDistricts.map((district) => (
                 <button
+                  type="button"
                   key={district.name}
                   onClick={() => handleSelectDistrict(district.name, district.center)}
-                  className="w-full px-3.5 py-2.5 text-left text-xs hover:bg-emerald-50 dark:hover:bg-slate-800/70 flex items-center justify-between transition"
+                  className="w-full px-4 py-2.5 text-left text-xs hover:bg-emerald-500/10 dark:hover:bg-slate-800/80 flex items-center justify-between transition gap-3 group"
                 >
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
+                  <div className="flex items-center space-x-2 min-w-0">
+                    <span className="font-semibold text-slate-900 dark:text-slate-200 group-hover:text-emerald-400 transition truncate text-xs sm:text-sm">
                       {district.name}
                     </span>
                     {district.hasDemoSector && (
-                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
-                        SURVEILLANCE ACTIVE
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 shrink-0">
+                        ACTIVE
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] text-slate-400 font-mono">
+                  <span className="text-[11px] text-slate-400 font-mono shrink-0 whitespace-nowrap">
                     {district.detectionCount} Sectors
                   </span>
                 </button>
@@ -125,10 +141,11 @@ export const MapScreen: React.FC<MapScreenProps> = ({
         </div>
 
         {/* Constellation Toggle & Category Filter Strip */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto min-w-0 pb-1 lg:pb-0 scrollbar-thin">
           {/* Satellite Constellation Toggle */}
           <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 shrink-0">
             <button
+              type="button"
               onClick={() => setActiveSensor('sentinel')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition ${
                 activeSensor === 'sentinel'
@@ -137,9 +154,11 @@ export const MapScreen: React.FC<MapScreenProps> = ({
               }`}
             >
               <Satellite className="w-3.5 h-3.5" />
-              <span>Sentinel-2 (10m)</span>
+              <span className="hidden sm:inline">Sentinel-2 (10m)</span>
+              <span className="sm:hidden">S2</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveSensor('landsat')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition ${
                 activeSensor === 'landsat'
@@ -148,13 +167,15 @@ export const MapScreen: React.FC<MapScreenProps> = ({
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
-              <span>Landsat-9 (15m)</span>
+              <span className="hidden sm:inline">Landsat-9 (15m)</span>
+              <span className="sm:hidden">L9</span>
             </button>
           </div>
 
           {/* Category Filter Pills */}
-          <div className="flex items-center space-x-1.5 overflow-x-auto pb-0.5">
+          <div className="flex items-center space-x-1.5 overflow-x-auto pb-0.5 shrink-0">
             <button
+              type="button"
               onClick={() => handleSelectCategory('all')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition ${
                 filterCategory === 'all'
@@ -171,6 +192,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({
 
               return (
                 <button
+                  type="button"
                   key={topic.id}
                   onClick={() => handleSelectCategory(topic.id as TopicCategory)}
                   className={`px-2.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border flex items-center space-x-1.5 transition ${
