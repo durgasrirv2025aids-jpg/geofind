@@ -24,6 +24,7 @@ export default function Home() {
   const [activeSensor, setActiveSensor] = useState<SatelliteSensorType>('sentinel');
   
   const [confidenceThreshold, setConfidenceThreshold] = useState<number>(70);
+  const [mounted, setMounted] = useState(false);
 
   // Modals state
   const [isSourcesOpen, setIsSourcesOpen] = useState(false);
@@ -33,6 +34,10 @@ export default function Home() {
 
   // Filter sectors by confidence threshold
   const filteredSectors = ALL_SECTORS.filter(s => s.confidence >= confidenceThreshold);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Update HTML dark class
   useEffect(() => {
@@ -78,6 +83,17 @@ export default function Home() {
     setAnalyzingDistrict(districtName);
     setIsAnalysisModalOpen(true);
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center text-white font-mono text-xs">
+        <div className="flex flex-col items-center space-y-2">
+          <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <span>Loading GeoFind AI...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? 'dark bg-[#0b0f19] text-white' : 'bg-[#f8f7ff] text-slate-900'}`}>
