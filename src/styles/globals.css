@@ -3,66 +3,123 @@
 @import 'tailwindcss/utilities';
 @import 'leaflet/dist/leaflet.css';
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  --font-inter: 'Inter', sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  font-family: var(--font-inter);
-  background-color: #f8f7ff;
-  color: #0f172a;
+  font-family: var(--font-sans);
+  background-color: #060913;
+  color: #f8fafc;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-}
-
-.dark body {
-  background-color: #0b0f19;
-  color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.6);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: rgba(51, 65, 85, 0.8);
+  border-radius: 9999px;
+  transition: background-color 0.2s;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}
+
+/* Subtle Satellite Tech Grid Background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.bg-radial-vignette {
+  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 65%);
+}
+
+/* Ultra-Premium Glass Panels */
+.glass-panel {
+  background: rgba(11, 16, 29, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
+.glass-card {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.12);
+  transform: translateY(-2px);
+}
+
+.glass-pill {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Telemetry Font Utilities */
+.font-mono-telemetry {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' on, 'zero' on;
+}
+
+/* Pulsing Radar Beacon */
+@keyframes radar-scan {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-radar {
+  animation: radar-scan 8s linear infinite;
 }
 
 /* Leaflet Customization */
 .leaflet-container {
-  font-family: 'Inter', sans-serif !important;
-  background-color: #0f172a !important;
+  font-family: var(--font-sans) !important;
+  background-color: #060913 !important;
 }
 
 .leaflet-popup-content-wrapper {
-  border-radius: 10px !important;
-  padding: 6px !important;
-  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: rgba(11, 16, 29, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  border-radius: 12px !important;
+  padding: 8px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
 }
 
 .leaflet-popup-tip {
-  background-color: #ffffff !important;
-}
-
-.dark .leaflet-popup-content-wrapper {
-  background-color: #0f172a !important;
-  color: #f8fafc !important;
-  border: 1px solid #334155 !important;
+  background-color: #0b101d !important;
 }
 
 /* Custom Map Pin Styling for GeoFind AI */
@@ -82,12 +139,12 @@ body {
 }
 
 .custom-map-pin:hover {
-  transform: translate(-50%, -108%) scale(1.1);
+  transform: translate(-50%, -108%) scale(1.12);
   z-index: 1000 !important;
 }
 
 .custom-map-pin.is-selected {
-  transform: translate(-50%, -112%) scale(1.22);
+  transform: translate(-50%, -114%) scale(1.24);
   z-index: 10000 !important;
 }
 
@@ -95,18 +152,18 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 800;
   color: #ffffff;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
   margin-bottom: 4px;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
 }
 
 .pin-head-ring {
@@ -115,7 +172,7 @@ body {
   border-radius: 50%;
   background: var(--pin-color);
   border: 3px solid #ffffff;
-  box-shadow: 0 0 15px var(--pin-color), 0 4px 10px rgba(0,0,0,0.6);
+  box-shadow: 0 0 18px var(--pin-color), 0 4px 10px rgba(0, 0, 0, 0.7);
   position: relative;
   display: flex;
   align-items: center;
@@ -128,17 +185,17 @@ body {
   height: 7px;
   background-color: #ffffff;
   border-radius: 50%;
-  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
 .pin-pulse-aura {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 38px;
-  height: 38px;
-  margin-top: -19px;
-  margin-left: -19px;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  margin-left: -20px;
   border-radius: 50%;
   background-color: var(--pin-color);
   opacity: 0.45;
@@ -148,12 +205,11 @@ body {
 
 @keyframes marker-pulse {
   0% {
-    transform: scale(0.4);
-    opacity: 0.85;
+    transform: scale(0.3);
+    opacity: 0.9;
   }
   100% {
-    transform: scale(2.3);
+    transform: scale(2.4);
     opacity: 0;
   }
 }
-

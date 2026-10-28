@@ -3,7 +3,7 @@ import { LeafletMap } from '../map/LeafletMap';
 import { DISTRICTS } from '@/data/districts';
 import { TOPICS } from '@/data/topics';
 import { DetectionSector, TopicCategory, SatelliteSensorType } from '@/types';
-import { Search, Satellite, Zap, Eye, Compass, Layers } from 'lucide-react';
+import { Search, Satellite, Zap, Compass, X, SlidersHorizontal, CheckCircle2 } from 'lucide-react';
 
 interface MapScreenProps {
   sectors: DetectionSector[];
@@ -54,19 +54,23 @@ export const MapScreen: React.FC<MapScreenProps> = ({
     onRunDistrictAnalysis(districtName);
   };
 
-  const filteredDistricts = DISTRICTS.filter(d => 
+  const filteredDistricts = DISTRICTS.filter((d) =>
     d.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const displayedSectors = sectors.filter(
+    (s) => filterCategory === 'all' || s.category === filterCategory
+  );
+
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-6 space-y-4 max-w-[1800px] mx-auto text-slate-900 dark:text-white">
-      {/* Search, Sensor Switcher & Category Filter Controls Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs shrink-0 z-20">
+    <div className="flex flex-col h-[calc(100vh-4.25rem)] p-3 sm:p-4 md:p-6 space-y-3 max-w-[1920px] mx-auto text-slate-900 dark:text-white">
+      {/* Top Glass Command Dock */}
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-md shrink-0 z-20">
         
-        {/* Tamil Nadu District Search Input */}
+        {/* Search District Auto-suggest */}
         <div className="relative flex-1 max-w-md">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
@@ -75,111 +79,126 @@ export const MapScreen: React.FC<MapScreenProps> = ({
                 setIsDropdownOpen(true);
               }}
               onFocus={() => setIsDropdownOpen(true)}
-              placeholder="Search Tamil Nadu district or location..."
-              className="w-full pl-9 pr-4 py-2 text-xs md:text-sm bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-900 dark:text-white"
+              placeholder="Search Tamil Nadu district or quarry zone..."
+              className="w-full pl-10 pr-9 py-2 text-xs md:text-sm bg-slate-100/80 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-900 dark:text-white transition placeholder:text-slate-400"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Auto-suggest dropdown */}
           {isDropdownOpen && filteredDistricts.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1.5 max-h-60 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-lg z-50 divide-y divide-slate-100 dark:divide-slate-800">
-              <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-slate-850">
-                Tamil Nadu Districts ({filteredDistricts.length})
+            <div className="absolute top-full left-0 right-0 mt-2 max-h-64 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-50 divide-y divide-slate-100 dark:divide-slate-800/60">
+              <div className="px-3.5 py-2 text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 dark:bg-slate-950 flex items-center justify-between">
+                <span>Tamil Nadu Districts ({filteredDistricts.length})</span>
+                <span className="text-emerald-500 font-mono">Select to Scan</span>
               </div>
               {filteredDistricts.map((district) => (
                 <button
                   key={district.name}
                   onClick={() => handleSelectDistrict(district.name, district.center)}
-                  className="w-full px-3.5 py-2 text-left text-xs hover:bg-emerald-50 dark:hover:bg-slate-800 flex items-center justify-between transition"
+                  className="w-full px-3.5 py-2.5 text-left text-xs hover:bg-emerald-50 dark:hover:bg-slate-800/70 flex items-center justify-between transition"
                 >
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
-                    {district.name}
-                  </span>
                   <div className="flex items-center space-x-2">
+                    <span className="font-bold text-slate-800 dark:text-slate-200">
+                      {district.name}
+                    </span>
                     {district.hasDemoSector && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
-                        ACTIVE
+                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
+                        SURVEILLANCE ACTIVE
                       </span>
                     )}
-                    <span className="text-[11px] text-slate-400 font-mono">
-                      {district.detectionCount} Sectors
-                    </span>
                   </div>
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    {district.detectionCount} Sectors
+                  </span>
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* Satellite Sensor Switcher */}
-        <div className="flex items-center space-x-1.5 bg-slate-100 dark:bg-slate-850 p-1 rounded-md border border-slate-200 dark:border-slate-700">
-          <button
-            onClick={() => setActiveSensor('sentinel')}
-            className={`px-2.5 py-1 rounded text-xs font-bold flex items-center space-x-1 transition ${
-              activeSensor === 'sentinel'
-                ? 'bg-emerald-600 text-white'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            <Satellite className="w-3 h-3" />
-            <span>Sentinel-2 (10m)</span>
-          </button>
-          <button
-            onClick={() => setActiveSensor('landsat')}
-            className={`px-2.5 py-1 rounded text-xs font-bold flex items-center space-x-1 transition ${
-              activeSensor === 'landsat'
-                ? 'bg-indigo-600 text-white'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            <Zap className="w-3 h-3" />
-            <span>Landsat-9 (15m)</span>
-          </button>
-        </div>
+        {/* Constellation Toggle & Category Filter Strip */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Satellite Constellation Toggle */}
+          <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 shrink-0">
+            <button
+              onClick={() => setActiveSensor('sentinel')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition ${
+                activeSensor === 'sentinel'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Satellite className="w-3.5 h-3.5" />
+              <span>Sentinel-2 (10m)</span>
+            </button>
+            <button
+              onClick={() => setActiveSensor('landsat')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition ${
+                activeSensor === 'landsat'
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Landsat-9 (15m)</span>
+            </button>
+          </div>
 
-        {/* Category Filters */}
-        <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 md:pb-0">
-          <button
-            onClick={() => handleSelectCategory('all')}
-            className={`px-3 py-1.5 rounded-md text-xs font-bold whitespace-nowrap border transition ${
-              filterCategory === 'all'
-                ? 'bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-slate-900 dark:border-white'
-                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
-            }`}
-          >
-            All Detections ({sectors.length})
-          </button>
-          {Object.values(TOPICS).map((topic) => {
-            const isCatActive = filterCategory === topic.id;
-            return (
-              <button
-                key={topic.id}
-                onClick={() => handleSelectCategory(topic.id as TopicCategory)}
-                className={`px-2.5 py-1.5 rounded-md text-xs font-bold whitespace-nowrap border flex items-center space-x-1.5 transition ${
-                  isCatActive
-                    ? 'text-white border-transparent shadow-xs'
-                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50'
-                }`}
-                style={{
-                  backgroundColor: isCatActive ? topic.color : undefined,
-                }}
-              >
-                <span
-                  className="w-2 h-2 rounded-full"
+          {/* Category Filter Pills */}
+          <div className="flex items-center space-x-1.5 overflow-x-auto pb-0.5">
+            <button
+              onClick={() => handleSelectCategory('all')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition ${
+                filterCategory === 'all'
+                  ? 'bg-slate-900 text-white border-slate-900 dark:bg-emerald-600 dark:text-white dark:border-emerald-500 shadow-sm'
+                  : 'bg-slate-100 text-slate-700 dark:bg-slate-800/80 dark:text-slate-300 border-slate-200 dark:border-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              All Sectors ({sectors.length})
+            </button>
+
+            {Object.values(TOPICS).map((topic) => {
+              const isCatActive = filterCategory === topic.id;
+              const count = sectors.filter((s) => s.category === topic.id).length;
+
+              return (
+                <button
+                  key={topic.id}
+                  onClick={() => handleSelectCategory(topic.id as TopicCategory)}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border flex items-center space-x-1.5 transition ${
+                    isCatActive
+                      ? 'text-white border-transparent shadow-sm'
+                      : 'bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  }`}
                   style={{
-                    backgroundColor: isCatActive ? '#ffffff' : topic.color,
+                    backgroundColor: isCatActive ? topic.color : undefined,
                   }}
-                />
-                <span>{topic.name}</span>
-              </button>
-            );
-          })}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{
+                      backgroundColor: isCatActive ? '#ffffff' : topic.color,
+                    }}
+                  />
+                  <span>{topic.name}</span>
+                  <span className="text-[10px] opacity-80 font-mono">({count})</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Main Map Canvas Area */}
-      <div className="relative flex-1 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
-        {/* Satellite Map Component */}
+      {/* Main Map View Canvas */}
+      <div className="relative flex-1 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800/80 shadow-2xl bg-slate-950">
         <LeafletMap
           sectors={sectors}
           selectedSector={selectedSector}
@@ -190,57 +209,54 @@ export const MapScreen: React.FC<MapScreenProps> = ({
           focusCenter={mapFocusCenter}
         />
 
-        {/* Floating Quick Sector Strip at Bottom of Map */}
-        <div className="absolute bottom-3 left-3 right-3 z-[400] bg-slate-900/95 backdrop-blur-md p-2 rounded-xl border border-slate-700/80 shadow-2xl flex items-center space-x-2 overflow-x-auto">
-          <div className="text-[11px] font-black uppercase text-slate-300 whitespace-nowrap px-2 flex items-center space-x-1.5 border-r border-slate-700 mr-1 shrink-0">
+        {/* Floating Bottom Quick Sector Navigation Strip */}
+        <div className="absolute bottom-3 left-3 right-3 z-[400] bg-slate-950/90 backdrop-blur-xl p-2.5 rounded-2xl border border-slate-800/90 shadow-2xl flex items-center space-x-2.5 overflow-x-auto">
+          <div className="text-[11px] font-black uppercase text-slate-300 whitespace-nowrap px-2 flex items-center space-x-2 border-r border-slate-800 mr-1 shrink-0">
             <span
               className="w-2.5 h-2.5 rounded-full"
               style={{
                 backgroundColor: filterCategory === 'all' ? '#10b981' : TOPICS[filterCategory]?.color || '#10b981',
               }}
             />
-            <span>
-              {filterCategory === 'all' ? 'All Sectors' : TOPICS[filterCategory]?.name} (
-              {sectors.filter((s) => filterCategory === 'all' || s.category === filterCategory).length}
-              )
+            <span className="text-white font-bold">
+              {filterCategory === 'all' ? 'All Active Sectors' : TOPICS[filterCategory]?.name}
             </span>
+            <span className="text-emerald-400 font-mono">({displayedSectors.length})</span>
           </div>
 
           <div className="flex items-center space-x-2 overflow-x-auto pb-0.5">
-            {sectors
-              .filter((s) => filterCategory === 'all' || s.category === filterCategory)
-              .map((sec, idx) => {
-                const isSelected = selectedSector?.id === sec.id;
-                return (
-                  <div
-                    key={sec.id}
-                    onClick={() => {
-                      onSelectSector(sec);
-                      setMapFocusCenter(sec.center);
+            {displayedSectors.map((sec, idx) => {
+              const isSelected = selectedSector?.id === sec.id;
+              return (
+                <div
+                  key={sec.id}
+                  onClick={() => {
+                    onSelectSector(sec);
+                    setMapFocusCenter(sec.center);
+                  }}
+                  className={`flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap transition-all shrink-0 border ${
+                    isSelected
+                      ? 'bg-emerald-600 text-white border-emerald-400 shadow-lg shadow-emerald-600/30 ring-1 ring-emerald-400'
+                      : 'bg-slate-900/90 hover:bg-slate-850 text-slate-200 border-slate-800 hover:border-slate-600'
+                  }`}
+                >
+                  <span className="text-emerald-400 font-mono text-[11px]">{idx + 1}.</span>
+                  <span className="font-bold text-white">{sec.district}:</span>
+                  <span className="max-w-[160px] truncate text-slate-300">{sec.title}</span>
+                  <span className="text-[10px] font-mono text-emerald-300">({sec.areaHa} ha)</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigateToAnalysis(sec);
                     }}
-                    className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer whitespace-nowrap transition shrink-0 border ${
-                      isSelected
-                        ? 'bg-emerald-600 text-white border-emerald-400 shadow-md'
-                        : 'bg-slate-800/90 hover:bg-slate-750 text-slate-200 border-slate-700 hover:border-slate-500'
-                    }`}
+                    className="ml-1 px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition uppercase tracking-wider"
+                    title="Compare Satellite Images"
                   >
-                    <span className="text-emerald-400 font-mono text-[11px]">{idx + 1}.</span>
-                    <span className="font-bold text-white">{sec.district}:</span>
-                    <span className="max-w-[150px] truncate text-slate-300">{sec.title}</span>
-                    <span className="text-[10px] font-mono text-emerald-300">({sec.areaHa} ha)</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onNavigateToAnalysis(sec);
-                      }}
-                      className="ml-1 px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition uppercase"
-                      title="Compare Satellite Images"
-                    >
-                      Compare
-                    </button>
-                  </div>
-                );
-              })}
+                    Compare
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

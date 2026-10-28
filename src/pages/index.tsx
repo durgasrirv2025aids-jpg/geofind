@@ -25,6 +25,7 @@ export default function Home() {
   
   const [confidenceThreshold, setConfidenceThreshold] = useState<number>(70);
   const [mounted, setMounted] = useState(false);
+  const mainContentRef = React.useRef<HTMLElement | null>(null);
 
   // Modals state
   const [isSourcesOpen, setIsSourcesOpen] = useState(false);
@@ -35,9 +36,25 @@ export default function Home() {
   // Filter sectors by confidence threshold
   const filteredSectors = ALL_SECTORS.filter(s => s.confidence >= confidenceThreshold);
 
+  // Dedicated scroll-to-top handler ensuring new pages always start at scrollTop = 0
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      mainContentRef.current.scrollTop = 0;
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Global scroll-to-top whenever screen or selected sector changes
+  useEffect(() => {
+    scrollToTop();
+  }, [activeScreen, selectedSector?.id]);
 
   // Update HTML dark class
   useEffect(() => {
@@ -48,8 +65,8 @@ export default function Home() {
     }
   }, [darkMode]);
 
-  const handleNavigateToMap = (category?: TopicCategory, sectorId?: string) => {
-    if (category) {
+  const handleNavigateToMap = (category?: TopicCategory | 'all', sectorId?: string) => {
+    if (category && category !== 'all') {
       setFilterCategory(category);
       const catSectors = ALL_SECTORS.filter((s) => s.category === category);
       setSelectedSector(catSectors[0] || null);
@@ -62,21 +79,25 @@ export default function Home() {
       if (found) setSelectedSector(found);
     }
     setActiveScreen('map');
+    scrollToTop();
   };
 
   const handleNavigateToAnalysis = (sector: DetectionSector) => {
     setSelectedSector(sector);
     setActiveScreen('change-analysis');
+    scrollToTop();
   };
 
   const handleNavigateToEvidence = (sector: DetectionSector) => {
     setSelectedSector(sector);
     setActiveScreen('evidence');
+    scrollToTop();
   };
 
   const handleNavigateToReports = (sector: DetectionSector) => {
     setSelectedSector(sector);
     setActiveScreen('reports');
+    scrollToTop();
   };
 
   const handleRunDistrictAnalysis = (districtName: string) => {
@@ -112,19 +133,23 @@ export default function Home() {
         {/* Sidebar */}
         <Sidebar
           activeScreen={activeScreen}
-          setActiveScreen={setActiveScreen}
+          setActiveScreen={(screen) => {
+            setActiveScreen(screen);
+            scrollToTop();
+          }}
           activeSensor={activeSensor}
           onOpenSources={() => setIsSourcesOpen(true)}
           onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
-        {/* Content Area */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Content Area - Scroll position reset on every navigation */}
+        <main ref={mainContentRef} id="main-content-area" className="flex-1 overflow-y-auto relative scroll-smooth focus:outline-none">
           {activeScreen === 'overview' && (
             <OverviewScreen
               activeSensor={activeSensor}
               setActiveSensor={setActiveSensor}
               onNavigateToMap={handleNavigateToMap}
+              onNavigateToAnalysis={handleNavigateToAnalysis}
               onSelectSector={(sector) => setSelectedSector(sector)}
             />
           )}

@@ -125,16 +125,33 @@ export const ChangeAnalysisScreen: React.FC<ChangeAnalysisScreenProps> = ({
 
   const currentSectorIndex = displayedSectors.findIndex((s) => s.id === activeSector.id);
 
+  const resetScrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    const mainEl = document.getElementById('main-content-area');
+    if (mainEl) {
+      mainEl.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      mainEl.scrollTop = 0;
+    }
+  };
+
+  React.useEffect(() => {
+    resetScrollToTop();
+  }, [activeSector.id, viewMode]);
+
   const handlePrevSector = () => {
     if (displayedSectors.length === 0) return;
     const prevIdx = (currentSectorIndex - 1 + displayedSectors.length) % displayedSectors.length;
     onSelectSector(displayedSectors[prevIdx]);
+    resetScrollToTop();
   };
 
   const handleNextSector = () => {
     if (displayedSectors.length === 0) return;
     const nextIdx = (currentSectorIndex + 1) % displayedSectors.length;
     onSelectSector(displayedSectors[nextIdx]);
+    resetScrollToTop();
   };
 
   const handleCategoryFilterChange = (cat: string) => {
@@ -143,6 +160,7 @@ export const ChangeAnalysisScreen: React.FC<ChangeAnalysisScreenProps> = ({
     if (catSectors.length > 0) {
       onSelectSector(catSectors[0]);
     }
+    resetScrollToTop();
   };
 
   // Determine active before/after images based on source + cache buster

@@ -18,6 +18,21 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
   const activeSector = sector || ALL_SECTORS[0];
   const topic = TOPICS[activeSector.category];
 
+  const resetScrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    const mainEl = document.getElementById('main-content-area');
+    if (mainEl) {
+      mainEl.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      mainEl.scrollTop = 0;
+    }
+  };
+
+  React.useEffect(() => {
+    resetScrollToTop();
+  }, [activeSector.id]);
+
   const handleDownload = () => {
     generatePdfReport(activeSector);
   };
