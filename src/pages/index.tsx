@@ -6,6 +6,7 @@ import { MapScreen } from '@/components/screens/MapScreen';
 import { ChangeAnalysisScreen } from '@/components/screens/ChangeAnalysisScreen';
 import { EvidenceScreen } from '@/components/screens/EvidenceScreen';
 import { ReportsScreen } from '@/components/screens/ReportsScreen';
+import { LoginScreen, UserProfile, PRESET_OFFICERS } from '@/components/screens/LoginScreen';
 import { DataSourcesModal } from '@/components/modals/DataSourcesModal';
 import { SettingsModal } from '@/components/modals/SettingsModal';
 import { AnalysisProgressModal } from '@/components/modals/AnalysisProgressModal';
@@ -16,6 +17,10 @@ export default function Home() {
   const [activeScreen, setActiveScreen] = useState<string>('overview');
   const [selectedSector, setSelectedSector] = useState<DetectionSector | null>(DEMO_SECTORS[0]);
   const [filterCategory, setFilterCategory] = useState<TopicCategory | 'all'>('all');
+  
+  // Officer Authentication State
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(PRESET_OFFICERS[0]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   
   // Sleek GeoINT Command Dark Theme as Default!
   const [darkMode, setDarkMode] = useState<boolean>(true);
@@ -116,6 +121,24 @@ export default function Home() {
     );
   }
 
+  if (activeScreen === 'login') {
+    return (
+      <LoginScreen
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          setActiveScreen('overview');
+          scrollToTop();
+        }}
+        onCancel={() => {
+          setActiveScreen('overview');
+          scrollToTop();
+        }}
+        isAuthenticated={isAuthenticated}
+      />
+    );
+  }
+
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? 'dark bg-[#0b0f19] text-white' : 'bg-[#f8f7ff] text-slate-900'}`}>
       {/* Header */}
@@ -126,6 +149,11 @@ export default function Home() {
         activeSensor={activeSensor}
         setActiveSensor={setActiveSensor}
         onOpenSources={() => setIsSourcesOpen(true)}
+        currentUser={currentUser}
+        onNavigateToLogin={() => {
+          setActiveScreen('login');
+          scrollToTop();
+        }}
       />
 
       {/* Main Body */}

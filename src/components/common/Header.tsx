@@ -1,6 +1,7 @@
 import React from 'react';
-import { Satellite, Sun, Moon, Zap } from 'lucide-react';
+import { Satellite, Sun, Moon, Zap, Lock, UserCheck } from 'lucide-react';
 import { SatelliteSensorType } from '@/types';
+import { UserProfile } from '@/components/screens/LoginScreen';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -9,6 +10,8 @@ interface HeaderProps {
   activeSensor: SatelliteSensorType;
   setActiveSensor: (sensor: SatelliteSensorType) => void;
   onOpenSources: () => void;
+  currentUser?: UserProfile | null;
+  onNavigateToLogin?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,7 +20,9 @@ export const Header: React.FC<HeaderProps> = ({
   activeScreen,
   activeSensor,
   setActiveSensor,
-  onOpenSources
+  onOpenSources,
+  currentUser,
+  onNavigateToLogin
 }) => {
   return (
     <header className="h-16 bg-[#080d1a]/90 backdrop-blur-xl border-b border-white/[0.08] px-4 md:px-6 flex items-center justify-between z-30 transition-all duration-200 text-white shadow-2xl relative">
@@ -96,6 +101,31 @@ export const Header: React.FC<HeaderProps> = ({
             {activeSensor === 'sentinel' ? 'Sentinel-2' : 'Landsat-9'}
           </span>
         </button>
+
+        {/* Officer Profile Badge / Login Switch */}
+        {currentUser ? (
+          <button
+            onClick={onNavigateToLogin}
+            title={`${currentUser.name} (${currentUser.role}) — Click to switch officer profile or re-authenticate`}
+            className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs border border-white/[0.08] hover:border-emerald-500/40 transition"
+          >
+            <div className="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center">
+              {currentUser.avatarInitials}
+            </div>
+            <div className="text-left leading-none hidden xl:block">
+              <div className="font-bold text-[11px] text-white truncate max-w-[130px]">{currentUser.name}</div>
+              <div className="text-[9px] text-emerald-400 font-mono">{currentUser.badge}</div>
+            </div>
+          </button>
+        ) : (
+          <button
+            onClick={onNavigateToLogin}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>Sign In</span>
+          </button>
+        )}
 
         {/* Light/Dark Theme Toggle */}
         <button

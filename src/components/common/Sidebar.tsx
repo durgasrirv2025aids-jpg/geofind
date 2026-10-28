@@ -11,7 +11,8 @@ import {
   Radio,
   Satellite,
   Compass,
-  Layers
+  Layers,
+  Fingerprint
 } from 'lucide-react';
 import { SatelliteSensorType } from '@/types';
 
@@ -36,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'change-analysis', label: 'Change Analysis', icon: SlidersHorizontal, badge: 'S2' },
     { id: 'evidence', label: 'Evidence Dossier', icon: FileSearch, badge: 'AUDIT' },
     { id: 'reports', label: 'Reports', icon: FileText, badge: 'PDF' },
+    { id: 'login', label: 'Officer Clearance', icon: Fingerprint, badge: 'AUTH' },
   ];
 
   return (
