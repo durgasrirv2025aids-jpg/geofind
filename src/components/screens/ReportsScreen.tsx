@@ -119,28 +119,21 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
             <span>Print</span>
           </button>
 
-          {/* Primary Instant Download PDF Button */}
-          <button
-            onClick={handleDownload}
-            disabled={isGenerating}
-            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center space-x-2 transition shadow-md ${
-              isGenerating
-                ? 'bg-emerald-700 text-white cursor-wait opacity-80'
-                : 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95'
-            }`}
+          {/* Primary Instant Native Download PDF Link */}
+          <a
+            href={`/api/download-report?id=${activeSector.id}`}
+            download={`GeoFind_Report_${activeSector.district}_${activeSector.category}.pdf`}
+            onClick={() => {
+              setDownloadStatus({
+                type: 'success',
+                message: `Downloading official PDF report for ${activeSector.district}... Check your downloads.`,
+              });
+            }}
+            className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white flex items-center space-x-2 transition shadow-md active:scale-95 cursor-pointer"
           >
-            {isGenerating ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Compiling PDF...</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4" />
-                <span>Download Report (PDF)</span>
-              </>
-            )}
-          </button>
+            <Download className="w-4 h-4" />
+            <span>Download Report (PDF)</span>
+          </a>
         </div>
       </div>
 
@@ -305,14 +298,14 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
                 <Printer className="w-3.5 h-3.5" />
                 <span>Print Document</span>
               </button>
-              <button
-                onClick={handleDownload}
-                disabled={isGenerating}
-                className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center space-x-1"
+              <a
+                href={`/api/download-report?id=${activeSector.id}`}
+                download={`GeoFind_Report_${activeSector.district}_${activeSector.category}.pdf`}
+                className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline flex items-center space-x-1 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>{isGenerating ? 'Compiling PDF...' : 'Download PDF Copy'}</span>
-              </button>
+                <span>Download PDF Copy</span>
+              </a>
             </div>
           </div>
         </div>
